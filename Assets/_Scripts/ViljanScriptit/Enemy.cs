@@ -4,10 +4,33 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    const float minPathUpdateTime = .2f;
-    const float pathUpdateMoveTreshold = 0.5f;
+    CapsuleCollider myCollider = new CapsuleCollider();
 
     public Transform target;
+
+    RaycastHit hitDown;
+    RaycastHit hitInfo;
+
+    public LayerMask ground;
+
+    Vector3 currentNormal = Vector3.up;
+    Vector3 currentAngle;
+    Vector3 forward;
+    Vector3 targetPosition;
+    Vector3 surfaceNormal = Vector3.down;
+    Vector3 colPoint;
+    Vector3 normalizedDirection;
+    Vector3 oldYPos;
+
+    GameObject[] rampWaypoints;
+    GameObject floor;
+    GameObject currentRampPoint;
+
+    Path path;
+    public EnemyRampMovement enemyRampMovement;
+
+    const float minPathUpdateTime = .2f;
+    const float pathUpdateMoveTreshold = 0.5f;
 
     public float slopeForce = 5;
     public float speed = 20;
@@ -30,33 +53,11 @@ public class Enemy : MonoBehaviour
 
     string floorName;
 
-    CapsuleCollider myCollider = new CapsuleCollider();
-
-    RaycastHit hitDown;
-    RaycastHit hitInfo;
-
-    public LayerMask ground;
-
-    bool bCollided = false;
     bool bGrounded;
     bool bMovingToPlayer = false;
     bool bMovingToRamp = false;
     bool bMovingToNextPoint = false;
 
-    Vector3 currentNormal = Vector3.up;
-    Vector3 currentAngle;
-    Vector3 forward;
-    Vector3 targetPosition;
-    Vector3 surfaceNormal = Vector3.down;
-    Vector3 colPoint;
-    Vector3 normalizedDirection;
-
-    GameObject[] rampWaypoints;
-    GameObject floor;
-    GameObject currentRampPoint;
-
-    Path path;
-    public EnemyRampMovement enemyRampMovement;
 
     private void Start()
     {
@@ -79,45 +80,49 @@ public class Enemy : MonoBehaviour
         CalculateGroundAngle();
         ApplyGravity();
 
-        if (!bMovingToPlayer && bGrounded && !bMovingToRamp && !bMovingToNextPoint)
+        if (!bMovingToPlayer && bGrounded && !bMovingToRamp)
         {
             StartCoroutine(UpdatePath());
             GetTargetToMoveTo();
         }
 
-        if (targetPosition == target.position)
-        {
-            bMovingToPlayer = true;
-        }
-        else
+        if (targetPosition != target.position)
         {
             bMovingToPlayer = false;
             bMovingToRamp = true;
-        }
 
-        if (bMovingToRamp)
-        {
-            //targetPosition = enemyRampMovement.GetTargetPosition();
-            print(transform.name + " should move to ramp now");
             RampMove();
         }
-
-        //USED JUST FOR TESTING
-        if (bCollided)
+        else
         {
-            print(transform.name + " collided");
+            StartCoroutine(UpdatePath());
         }
     }
 
     private void RampMove()
     {
-        StartCoroutine(UpdatePath());
+        enemyRampMovement.MoveOnRamp(transform);
 
-        if(Vector3.Distance(transform.position, targetPosition) <= 2f)
+        if(Mathf.Abs(transform.position.y - target.position.y) <= 0.5f)
         {
-            print(transform.name + " is ready to move to ramp now");
-            enemyRampMovement.MoveOnRamp(transform);
+            bMovingToRamp = false;
+            targetPosition = target.position;
         }
+
+        if (enemyRampMovement.OnRamp(transform))
+        {
+            Debug.Log(transform.name + " is on ramp");
+            Vector3 newYPos = new Vector3(transform.position.x, hitInfo.point.y + height, transform.position.z);
+            oldYPos = newYPos;
+            transform.position = newYPos;
+        }
+
+        targetPosition = enemyRampMovement.GetTargetPosition();
+
+        if(Vector3.Distance(transform.position, targetPosition) <= 0.5)
+        {
+            print(transform.name + " has arrived to ramp");
+        }       
     }
 
     private void CalculateGroundAngle()

@@ -965,7 +965,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &959171822
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -979,6 +979,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1059500952}
+  ground:
+    serializedVersion: 2
+    m_Bits: 458752
+  enemyRampMovement: {fileID: 1396378511}
   slopeForce: 5
   speed: 15
   fallSpeed: 10
@@ -989,10 +993,6 @@ MonoBehaviour:
   heightPadding: 0.1
   maxGroundAngle: 145
   attackRange: 2
-  ground:
-    serializedVersion: 2
-    m_Bits: 458752
-  enemyRampMovement: {fileID: 1396378511}
 --- !u!136 &959171823
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1336,7 +1336,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1059500948}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 68.22, y: 10.8, z: -42.74}
+  m_LocalPosition: {x: 66, y: 10.8, z: -52.52}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1665,7 +1665,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1271421842
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1679,6 +1679,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1059500952}
+  ground:
+    serializedVersion: 2
+    m_Bits: 458752
+  enemyRampMovement: {fileID: 1396378511}
   slopeForce: 5
   speed: 15
   fallSpeed: 10
@@ -1689,10 +1693,6 @@ MonoBehaviour:
   heightPadding: 0.1
   maxGroundAngle: 145
   attackRange: 2
-  ground:
-    serializedVersion: 2
-    m_Bits: 458752
-  enemyRampMovement: {fileID: 1396378511}
 --- !u!136 &1271421843
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1760,7 +1760,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1271421841}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 41.5, y: 1, z: 37.1}
+  m_LocalPosition: {x: -39.2, y: 1, z: 37.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1917,6 +1917,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1059500952}
+  ground:
+    serializedVersion: 2
+    m_Bits: 458752
+  enemyRampMovement: {fileID: 1396378511}
   slopeForce: 5
   speed: 15
   fallSpeed: 10
@@ -1927,10 +1931,6 @@ MonoBehaviour:
   heightPadding: 0.1
   maxGroundAngle: 145
   attackRange: 2
-  ground:
-    serializedVersion: 2
-    m_Bits: 458752
-  enemyRampMovement: {fileID: 1396378511}
 --- !u!136 &1352674002
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -2020,8 +2020,6 @@ MonoBehaviour:
   height: 1
   heightPadding: 0.5
   speed: 15
-  slopeForce: 50
-  slopeForceRayLenght: 1.5
   ground:
     serializedVersion: 2
     m_Bits: 458752
@@ -2041,7 +2039,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1396378511
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2058,8 +2056,6 @@ MonoBehaviour:
   height: 1
   heightPadding: 0.5
   speed: 15
-  slopeForce: 50
-  slopeForceRayLenght: 1.5
   ground:
     serializedVersion: 2
     m_Bits: 458752
@@ -2187,7 +2183,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1580351532
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2201,6 +2197,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1059500952}
+  ground:
+    serializedVersion: 2
+    m_Bits: 458752
+  enemyRampMovement: {fileID: 1396378511}
   slopeForce: 5
   speed: 15
   fallSpeed: 10
@@ -2211,10 +2211,6 @@ MonoBehaviour:
   heightPadding: 0.1
   maxGroundAngle: 145
   attackRange: 2
-  ground:
-    serializedVersion: 2
-    m_Bits: 458752
-  enemyRampMovement: {fileID: 1396378511}
 --- !u!136 &1580351533
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -2610,7 +2606,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1721291036
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2624,6 +2620,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1059500952}
+  ground:
+    serializedVersion: 2
+    m_Bits: 458752
+  enemyRampMovement: {fileID: 1396378511}
   slopeForce: 5
   speed: 15
   fallSpeed: 10
@@ -2634,10 +2634,6 @@ MonoBehaviour:
   heightPadding: 0.1
   maxGroundAngle: 145
   attackRange: 2
-  ground:
-    serializedVersion: 2
-    m_Bits: 458752
-  enemyRampMovement: {fileID: 1396378511}
 --- !u!136 &1721291037
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -2821,7 +2817,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1790581254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2835,6 +2831,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1059500952}
+  ground:
+    serializedVersion: 2
+    m_Bits: 458752
+  enemyRampMovement: {fileID: 1396378511}
   slopeForce: 5
   speed: 15
   fallSpeed: 10
@@ -2845,10 +2845,6 @@ MonoBehaviour:
   heightPadding: 0.1
   maxGroundAngle: 145
   attackRange: 2
-  ground:
-    serializedVersion: 2
-    m_Bits: 458752
-  enemyRampMovement: {fileID: 1396378511}
 --- !u!136 &1790581255
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -2916,7 +2912,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1790581253}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 48.2, y: 1, z: 84}
+  m_LocalPosition: {x: 29.1, y: 1, z: 84}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

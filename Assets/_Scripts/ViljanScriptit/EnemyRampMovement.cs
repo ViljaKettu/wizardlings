@@ -4,36 +4,33 @@ using UnityEngine;
 
 public class EnemyRampMovement : MonoBehaviour
 {
+    GameObject[] rampWaypoints;
+    GameObject floor;
+    GameObject currentRampPoint;
+
     public Transform target;
+
+    RaycastHit hitDown;
+    RaycastHit hitInfo;
+
+    private Vector3 targetPosition;
+    private Vector3 normalizedDirection;
+    private Vector3 oldYPos;
 
     public float height = 1f;
     public float heightPadding = 0.1f;
     public float speed = 5;
-
-    [SerializeField] private float slopeForce;
-    [SerializeField] private float slopeForceRayLenght;
 
     private float closestDistToEnemy;
     private float closestDistToPlayer;
 
     private string floorName;
 
-    RaycastHit hitDown;
-    RaycastHit hitInfo;
-
     public LayerMask ground;
 
     private bool bGrounded;
     private bool bMovingToRamp = false;
-
-    private Vector3 targetPosition;
-    private Vector3 normalizedDirection;
-    private Vector3 oldYPos;
-
-    GameObject[] rampWaypoints;
-    GameObject floor;
-    GameObject currentRampPoint;
-
+    bool bArrivedToRamp = false;
 
     private void Start()
     {
@@ -54,26 +51,38 @@ public class EnemyRampMovement : MonoBehaviour
         {
             MoveOnRamp(transform);
         }
-
     }
 
     public void MoveOnRamp(Transform enemyUnit)
     {
-        normalizedDirection = (targetPosition - enemyUnit.position).normalized;
-        enemyUnit.position += normalizedDirection * speed * Time.deltaTime;
+        if (!bArrivedToRamp) // TODO: THIS IS NOT NEEDED WHEN CALLING FROM ENEMY SCRIPT? - FIGURE OUT WHY
+        {
+            FindClosestRamp(enemyUnit);
+        }
 
-        if (OnRamp())
+        if (OnRamp(transform))
         {
             Vector3 newYPos = new Vector3(enemyUnit.position.x, hitInfo.point.y + height, enemyUnit.position.z);
             oldYPos = newYPos;
             enemyUnit.position = newYPos;
         }
 
-        if (Vector3.Distance(enemyUnit.position, targetPosition) <= 0.5f)
+        if (Vector3.Distance(enemyUnit.position, targetPosition) <= 1f)
         {
-            FindNextRampPoint(currentRampPoint);
-            bMovingToRamp = false;
+            FindNextRampPoint();
+
+            if (!bArrivedToRamp)
+            {
+                bArrivedToRamp = true;
+            }
+            else
+            {
+                bArrivedToRamp = false;
+            }
         }
+
+        normalizedDirection = (targetPosition - enemyUnit.position).normalized;
+        enemyUnit.position += normalizedDirection * speed * Time.deltaTime;
     }
 
     private void CheckGround()
@@ -97,7 +106,7 @@ public class EnemyRampMovement : MonoBehaviour
         }
     }
 
-    private bool OnRamp()
+    public bool OnRamp(Transform enemyTransform)
     {
         if (!bGrounded)
         {
@@ -106,7 +115,7 @@ public class EnemyRampMovement : MonoBehaviour
 
         RaycastHit hit;
 
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, height + heightPadding))
+        if (Physics.Raycast(enemyTransform.position, Vector3.down, out hit, height + heightPadding))
         {
             if (hit.normal != Vector3.up)
             {
@@ -120,11 +129,15 @@ public class EnemyRampMovement : MonoBehaviour
     public Vector3 FindClosestRamp(Transform enemyUnit)
     {
         bMovingToRamp = true;
+
+        //TODO: does this find closest to player and not enemy? - it seems next ramp point changes to one closer to enemy
+
         Transform closest = enemyUnit;
 
         float distance = Mathf.Infinity;
 
-        closestDistToEnemy = Vector3.Distance(enemyUnit.position, target.position);
+        var dir = enemyUnit.position - target.position;
+        closestDistToEnemy = dir.magnitude;
         closestDistToPlayer = closestDistToEnemy;
 
         //go through each ramp to find closest one to both enemy and player
@@ -132,41 +145,33 @@ public class EnemyRampMovement : MonoBehaviour
         {
 
             distance = Vector3.Distance(enemyUnit.position, rampWaypoints[i].transform.position);
-            print(transform.name + " is looking for closest ramp to player");
 
-            
-            if (distance < closestDistToEnemy && Mathf.Abs(enemyUnit.position.y - rampWaypoints[i].transform.position.y) <= 1f && currentRampPoint != rampWaypoints[i])
+            if (distance < closestDistToEnemy && Mathf.Abs(enemyUnit.position.y - rampWaypoints[i].transform.position.y) <= 2f && currentRampPoint != rampWaypoints[i])
             {
-                
+
                 var ramp = rampWaypoints[i].transform.parent;
 
-                
                 foreach (Transform child in ramp)
                 {
-                    if (child.transform != rampWaypoints[i].transform && Mathf.Abs(target.position.y - child.position.y) <= 1)
+                    if (child.transform != rampWaypoints[i].transform && Mathf.Abs(target.position.y - child.position.y) <= 1) //TODO: this finds ramp point on same floor as player - need to find point on enemy's floor and make it targetPosition
                     {
                         closestDistToEnemy = distance;
                         closest = rampWaypoints[i].transform;
                         currentRampPoint = rampWaypoints[i];
                     }
                 }
-
-                //TODO: find way from ramp to ramp if there is level between enemy and player - necessary?
-            }
-            else
-            {
-                print(transform.name + " is just going to closest ramp point");
-                closest = rampWaypoints[i].transform;
             }
         }
 
         targetPosition = closest.transform.position;
+
         return targetPosition;
     }
 
-    public void FindNextRampPoint(GameObject currentRampPoint)
+    public void FindNextRampPoint()
     {
-        // find ramp enemy is on
+        bArrivedToRamp = false;
+
         var ramp = currentRampPoint.transform.parent;
 
         GameObject nextRampPoint = null;
@@ -176,10 +181,6 @@ public class EnemyRampMovement : MonoBehaviour
             if (child != currentRampPoint)
             {
                 nextRampPoint = child.gameObject;
-            }
-            else
-            {
-                return;
             }
         }
 
