@@ -29,7 +29,6 @@ public class EnemyRampMovement : MonoBehaviour
     public LayerMask ground;
 
     private bool bGrounded;
-    private bool bMovingToRamp = false;
     bool bArrivedToRamp = false;
 
     private void Start()
@@ -37,30 +36,30 @@ public class EnemyRampMovement : MonoBehaviour
         rampWaypoints = GameObject.FindGameObjectsWithTag("Waypoint");
     }
 
-    private void Update()
-    {
-        CheckGround();
-        ApplyGravity();
+    //private void Update()
+    //{
+    //    CheckGround();
+    //    ApplyGravity();
 
-        if (!bMovingToRamp)
-        {
-            FindClosestRamp(transform);
-        }
+    //    if (!bMovingToRamp)
+    //    {
+    //        FindClosestRamp(transform);
+    //    }
 
-        if (bMovingToRamp && bGrounded)
-        {
-            MoveOnRamp(transform);
-        }
-    }
+    //    if (bMovingToRamp && bGrounded)
+    //    {
+    //        MoveOnRamp(transform);
+    //    }
+    //}
 
     public void MoveOnRamp(Transform enemyUnit)
     {
-        if (!bArrivedToRamp) // TODO: THIS IS NOT NEEDED WHEN CALLING FROM ENEMY SCRIPT? - FIGURE OUT WHY
+        if (!bArrivedToRamp)
         {
             FindClosestRamp(enemyUnit);
         }
 
-        if (OnRamp(transform))
+        if (bArrivedToRamp)
         {
             Vector3 newYPos = new Vector3(enemyUnit.position.x, hitInfo.point.y + height, enemyUnit.position.z);
             oldYPos = newYPos;
@@ -128,15 +127,13 @@ public class EnemyRampMovement : MonoBehaviour
 
     public Vector3 FindClosestRamp(Transform enemyUnit)
     {
-        bMovingToRamp = true;
-
-        //TODO: does this find closest to player and not enemy? - it seems next ramp point changes to one closer to enemy
+        //bMovingToRamp = true;
 
         Transform closest = enemyUnit;
 
         float distance = Mathf.Infinity;
 
-        var dir = enemyUnit.position - target.position;
+        var dir = target.position - enemyUnit.position;
         closestDistToEnemy = dir.magnitude;
         closestDistToPlayer = closestDistToEnemy;
 
@@ -153,7 +150,7 @@ public class EnemyRampMovement : MonoBehaviour
 
                 foreach (Transform child in ramp)
                 {
-                    if (child.transform != rampWaypoints[i].transform && Mathf.Abs(target.position.y - child.position.y) <= 1) //TODO: this finds ramp point on same floor as player - need to find point on enemy's floor and make it targetPosition
+                    if (child.transform != rampWaypoints[i].transform && Mathf.Abs(target.position.y - child.position.y) <= 1) 
                     {
                         closestDistToEnemy = distance;
                         closest = rampWaypoints[i].transform;
@@ -164,12 +161,13 @@ public class EnemyRampMovement : MonoBehaviour
         }
 
         targetPosition = closest.transform.position;
-
         return targetPosition;
     }
 
-    public void FindNextRampPoint()
+    public Vector3 FindNextRampPoint()
     {
+        print("finding next ramp point");
+
         bArrivedToRamp = false;
 
         var ramp = currentRampPoint.transform.parent;
@@ -185,6 +183,8 @@ public class EnemyRampMovement : MonoBehaviour
         }
 
         targetPosition = nextRampPoint.transform.position;
+
+        return targetPosition;
     }
 
     public Vector3 GetTargetPosition()

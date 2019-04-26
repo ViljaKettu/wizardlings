@@ -68,7 +68,6 @@ public class Enemy : MonoBehaviour
         tempAttackRange = attackRange;
         normStoppingDist = stoppingDistance;
 
-        //ramps = GameObject.FindGameObjectsWithTag("Ramp");
         rampWaypoints = GameObject.FindGameObjectsWithTag("Waypoint");
     }
 
@@ -103,26 +102,26 @@ public class Enemy : MonoBehaviour
     {
         enemyRampMovement.MoveOnRamp(transform);
 
-        if(Mathf.Abs(transform.position.y - target.position.y) <= 0.5f)
+        if (Mathf.Abs(transform.position.y - target.position.y) <= 0.5f)
         {
             bMovingToRamp = false;
             targetPosition = target.position;
         }
 
-        if (enemyRampMovement.OnRamp(transform))
+        if (Vector3.Distance(transform.position, targetPosition) <= 0.5f)
         {
-            Debug.Log(transform.name + " is on ramp");
+            print(transform.name + " has arrived to ramp");
+
             Vector3 newYPos = new Vector3(transform.position.x, hitInfo.point.y + height, transform.position.z);
             oldYPos = newYPos;
             transform.position = newYPos;
+
         }
 
         targetPosition = enemyRampMovement.GetTargetPosition();
 
-        if(Vector3.Distance(transform.position, targetPosition) <= 0.5)
-        {
-            print(transform.name + " has arrived to ramp");
-        }       
+        normalizedDirection = (targetPosition - transform.position).normalized;
+        transform.position += normalizedDirection * speed * Time.deltaTime;
     }
 
     private void CalculateGroundAngle()
@@ -217,11 +216,6 @@ public class Enemy : MonoBehaviour
                 {
                     targetPosition = target.position; // set player's position as targetPosition
                 }
-                else
-                {
-                    // floor is different - find ramp to wanted floor
-                    targetPosition = enemyRampMovement.FindClosestRamp(this.transform);
-                }
             }
         }
     }
@@ -289,6 +283,7 @@ public class Enemy : MonoBehaviour
                 // zero out stopping distance if moving to ramp or next rampPoint
                 if (bMovingToRamp || bMovingToNextPoint)
                 {
+                    print("zeroing stopping distance");
                     stoppingDistance = 0f;
                     attackRange = 0;
                 }
@@ -319,11 +314,13 @@ public class Enemy : MonoBehaviour
                 Quaternion targetRotation = Quaternion.LookRotation(path.lookPoints[pathIndex] - transform.position);
                 transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * turnSpeed);
 
+                //TODO: change this so that it allows ramp movement
                 // Keep unit's own y - position while following path
                 Vector3 targetPos = new Vector3(path.lookPoints[pathIndex].x, this.transform.position.y, path.lookPoints[pathIndex].z);
                 transform.position = Vector3.MoveTowards(transform.position, targetPos, Time.deltaTime * speed * speedPercent);
-
                 normalizedDirection = (targetPos - transform.position).normalized;
+
+
                 transform.position += normalizedDirection * speed * speedPercent * Time.deltaTime;
             }
 

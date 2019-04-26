@@ -77,7 +77,7 @@ public class FloorGrid : MonoBehaviour
 
         grid = new Node[gridSizeX, gridSizeY];
 
-        //find bottom left corner of the area
+
         Vector3 worldBottomLeft = center - Vector3.right * gridWorldSize.x / 2 - Vector3.forward * gridWorldSize.y / 2;
 
         for (int x = 0; x < gridSizeX; x++)
@@ -86,9 +86,7 @@ public class FloorGrid : MonoBehaviour
             {
                 worldPoint = worldBottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
 
-                //check if node is walkable
                 bool bWalkable = !(Physics.CheckSphere(worldPoint, nodeRadius * 1.2f, unWalkable));
-
 
                 int movementPenalty = 0;
 
@@ -116,7 +114,6 @@ public class FloorGrid : MonoBehaviour
         BlurPenaltyMap(3);
     }
 
-    // Blurpelnalty for terrain to priorize centre of the terrain instead of edges
     void BlurPenaltyMap(int blurSize)
     {
         int kernelSize = blurSize * 2 + 1;
@@ -136,10 +133,9 @@ public class FloorGrid : MonoBehaviour
 
             for (int x = 1; x < gridSizeX; x++)
             {
-                int removeIndex = Mathf.Clamp(x - kernelExtents - 1, 0, gridSizeX); //remove previous number from kernel
-                int addIndex = Mathf.Clamp(x + kernelExtents, 0, gridSizeX - 1); //add next number to kernel
+                int removeIndex = Mathf.Clamp(x - kernelExtents - 1, 0, gridSizeX); 
+                int addIndex = Mathf.Clamp(x + kernelExtents, 0, gridSizeX - 1); 
 
-                // calculate horizontal penalties of the grid
                 penaltiesHorizontalPass[x, y] = penaltiesHorizontalPass[x - 1, y] - grid[removeIndex, y].movementPenalty + grid[addIndex, y].movementPenalty;
             }
         }
@@ -158,13 +154,11 @@ public class FloorGrid : MonoBehaviour
 
             for (int y = 1; y < gridSizeY; y++)
             {
-                int removeIndex = Mathf.Clamp(y - kernelExtents - 1, 0, gridSizeX); //remove previous number from kernel
-                int addIndex = Mathf.Clamp(y + kernelExtents, 0, gridSizeX - 1); //add next number to kernel
+                int removeIndex = Mathf.Clamp(y - kernelExtents - 1, 0, gridSizeX); 
+                int addIndex = Mathf.Clamp(y + kernelExtents, 0, gridSizeX - 1);
 
-                // calculate vertical penalties of the grid
                 penaltiesVerticalPass[x, y] = penaltiesVerticalPass[x, y - 1] - penaltiesHorizontalPass[x, removeIndex] + penaltiesHorizontalPass[x, addIndex];
 
-                //calculate final penalty values
                 blurredPenalty = Mathf.RoundToInt((float)penaltiesVerticalPass[x, y] / (kernelSize * kernelSize));
                 grid[x, y].movementPenalty = blurredPenalty;
 
