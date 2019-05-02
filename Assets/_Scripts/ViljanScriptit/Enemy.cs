@@ -11,6 +11,8 @@ public class Enemy : MonoBehaviour
     RaycastHit hitDown;
     RaycastHit hitInfo;
 
+    CharacterController character;
+
     public LayerMask ground;
 
     Vector3 currentNormal = Vector3.up;
@@ -68,6 +70,8 @@ public class Enemy : MonoBehaviour
         tempAttackRange = attackRange;
         normStoppingDist = stoppingDistance;
 
+        character = GetComponent<CharacterController>();
+
         rampWaypoints = GameObject.FindGameObjectsWithTag("Waypoint");
     }
 
@@ -90,7 +94,8 @@ public class Enemy : MonoBehaviour
             bMovingToPlayer = false;
             bMovingToRamp = true;
 
-            RampMove();
+            StartCoroutine(RampMove());
+
         }
         else
         {
@@ -98,30 +103,36 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void RampMove()
+    IEnumerator RampMove()
     {
         enemyRampMovement.MoveOnRamp(transform);
 
         if (Mathf.Abs(transform.position.y - target.position.y) <= 0.5f)
         {
             bMovingToRamp = false;
+            bMovingToNextPoint = false;
             targetPosition = target.position;
         }
 
-        if (Vector3.Distance(transform.position, targetPosition) <= 0.5f)
+        print("distance to ramp is: " + Vector3.Distance(transform.position, targetPosition));
+
+        if (Vector3.Distance(transform.position, targetPosition) <= 2f)
         {
             print(transform.name + " has arrived to ramp");
+
+            bMovingToNextPoint = true;
 
             Vector3 newYPos = new Vector3(transform.position.x, hitInfo.point.y + height, transform.position.z);
             oldYPos = newYPos;
             transform.position = newYPos;
-
         }
 
         targetPosition = enemyRampMovement.GetTargetPosition();
 
-        normalizedDirection = (targetPosition - transform.position).normalized;
-        transform.position += normalizedDirection * speed * Time.deltaTime;
+
+        //Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
+
+        yield return null;
     }
 
     private void CalculateGroundAngle()
@@ -310,18 +321,26 @@ public class Enemy : MonoBehaviour
                     }
                 }
 
+               
+                //TODO: change this so that it allows ramp movement?
+                var wantedPosY = transform.position.y;
+
+                if(bMovingToNextPoint)
+                {
+                    RaycastHit hit;
+
+                    if(Physics.Raycast(transform.position, transform.forward, out hit, 1.5f, ground))
+                    {
+                        wantedPosY = hit.point.y;
+                    }
+                }
+
                 // Rotate towards next pathPoint
                 Quaternion targetRotation = Quaternion.LookRotation(path.lookPoints[pathIndex] - transform.position);
                 transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * turnSpeed);
 
-                //TODO: change this so that it allows ramp movement
-                // Keep unit's own y - position while following path
-                Vector3 targetPos = new Vector3(path.lookPoints[pathIndex].x, this.transform.position.y, path.lookPoints[pathIndex].z);
-                transform.position = Vector3.MoveTowards(transform.position, targetPos, Time.deltaTime * speed * speedPercent);
-                normalizedDirection = (targetPos - transform.position).normalized;
-
-
-                transform.position += normalizedDirection * speed * speedPercent * Time.deltaTime;
+                Vector3 targetPos = new Vector3(path.lookPoints[pathIndex].x, wantedPosY, path.lookPoints[pathIndex].z);
+                transform.position = Vector3.MoveTowards(transform.position, targetPos, Time.deltaTime * speed * speedPercent);               
             }
 
             transform.LookAt(targetPosition);

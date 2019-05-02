@@ -29,28 +29,12 @@ public class EnemyRampMovement : MonoBehaviour
     public LayerMask ground;
 
     private bool bGrounded;
-    bool bArrivedToRamp = false;
+    public bool bArrivedToRamp = false;
 
     private void Start()
     {
         rampWaypoints = GameObject.FindGameObjectsWithTag("Waypoint");
     }
-
-    //private void Update()
-    //{
-    //    CheckGround();
-    //    ApplyGravity();
-
-    //    if (!bMovingToRamp)
-    //    {
-    //        FindClosestRamp(transform);
-    //    }
-
-    //    if (bMovingToRamp && bGrounded)
-    //    {
-    //        MoveOnRamp(transform);
-    //    }
-    //}
 
     public void MoveOnRamp(Transform enemyUnit)
     {
@@ -59,12 +43,12 @@ public class EnemyRampMovement : MonoBehaviour
             FindClosestRamp(enemyUnit);
         }
 
-        if (bArrivedToRamp)
-        {
-            Vector3 newYPos = new Vector3(enemyUnit.position.x, hitInfo.point.y + height, enemyUnit.position.z);
-            oldYPos = newYPos;
-            enemyUnit.position = newYPos;
-        }
+        //if (bArrivedToRamp)
+        //{
+        //    Vector3 newYPos = new Vector3(enemyUnit.position.x, hitInfo.point.y + height, enemyUnit.position.z);
+        //    oldYPos = newYPos;
+        //    enemyUnit.position = newYPos;
+        //}
 
         if (Vector3.Distance(enemyUnit.position, targetPosition) <= 1f)
         {
@@ -80,29 +64,25 @@ public class EnemyRampMovement : MonoBehaviour
             }
         }
 
-        normalizedDirection = (targetPosition - enemyUnit.position).normalized;
-        enemyUnit.position += normalizedDirection * speed * Time.deltaTime;
-    }
 
-    private void CheckGround()
-    {
-        if (Physics.Raycast(transform.position, Vector3.down, out hitInfo, height + heightPadding, ground))
-        {
-            transform.up = hitInfo.normal;
-            bGrounded = true;
-        }
-        else
-        {
-            bGrounded = false;
-        }
-    }
 
-    private void ApplyGravity()
-    {
-        if (!bGrounded)
+        //if(bArrivedToRamp)
+        //{
+        //    while (Mathf.Abs(enemyUnit.position.y - target.position.y) <= 1f)
+        //    {
+        //        Vector3 newYPos = new Vector3(enemyUnit.position.x, hitInfo.point.y + height, enemyUnit.position.z);
+        //        oldYPos = newYPos;
+        //        enemyUnit.position = newYPos;
+
+        //        normalizedDirection = (targetPosition - enemyUnit.position).normalized;
+        //        enemyUnit.position += normalizedDirection * speed * Time.deltaTime;
+        //    }
+
+        if (Mathf.Abs(enemyUnit.position.y - target.position.y) <= 1f)
         {
-            transform.position += Physics.gravity * Time.deltaTime;
+            bArrivedToRamp = false;
         }
+
     }
 
     public bool OnRamp(Transform enemyTransform)
@@ -150,7 +130,7 @@ public class EnemyRampMovement : MonoBehaviour
 
                 foreach (Transform child in ramp)
                 {
-                    if (child.transform != rampWaypoints[i].transform && Mathf.Abs(target.position.y - child.position.y) <= 1) 
+                    if (child.transform != rampWaypoints[i].transform && Mathf.Abs(target.position.y - child.position.y) <= 1)
                     {
                         closestDistToEnemy = distance;
                         closest = rampWaypoints[i].transform;
